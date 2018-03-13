@@ -1,42 +1,58 @@
+#
+# Vidizayn 
+#
+
 import os
 import sys
 
-publichPath = './public'
-
-with open('./ga_code.txt', 'r') as file :
-    gaCode = file.read()
-
-def replaceFile(fileToRepaced, textToFind, textToReplace):
-    with open(fileToRepaced, 'r') as file :
-        fileData = file.read()
-
-    if fileData.find(textToFind) > -1:
-        fileData = fileData.replace(textToFind, textToReplace)
-
-        with open(fileToRepaced, 'w') as file:
-            file.write(fileData)
-        
-        print('Replaced: ' + fileToRepaced)
+def getEnvironmentCode(prodFile, devFile, prodBranch, currentBranch):
+    global ANALYTICS_PATH
+    fileToRead = prodFile if prodBranch == currentBranch else devFile
+    fileToRead = ANALYTICS_PATH + '/' + fileToRead
+    if os.path.isfile(fileToRead):
+        with open(fileToRead, 'r') as f :
+            return f.read()
     else:
-        print('Not found in: ' + fileToRepaced)
+        return ''
 
-def searchInfolder(folderPath):
-    for fileToRepace in os.listdir(folderPath):
-        
-        fullPath = os.path.join(folderPath, fileToRepace)
-        
-        if fileToRepace.endswith('.html'):
-            // replace repeatedly
-            replaceFile(fullPath, gaCode)
-        elif os.path.isdir(fullPath):
-            searchInfolder(fullPath)
+def replaceWithMapping(filePath):
+    global MAPPING
+
+    with open(filePath, 'r') as file :
+        fileContent = file.read()
+
+    print('File: ' + filePath)
+
+    for textToFind in MAPPING:
+        if fileContent.find(textToFind) > -1:
+            with open(filePath, 'w') as f:
+                fileContent = fileContent.replace(textToFind, MAPPING[textToFind])
+                f.write(fileContent)
+
+            print('Replaced: ' + textToFind)
+        else:
+            print('Not found: ' + textToFind)
+
+def searchFileByExtension(folderPath, ext):
+    for f in os.listdir(folderPath):
+        filePath = os.path.join(folderPath, f)
+        if f.endswith(ext):
+            replaceWithMapping(filePath)
+        elif os.path.isdir(filePath):
+            searchFileByExtension(filePath, ext)
 
 
-PRODUCTION_BRANCH = 'live'
+PUBLIC_PATH         = './public'
+ANALYTICS_PATH      = './analytics'
+PRODUCTION_BRANCH   = 'live'
+CURRENT_BRACNH      = os.environ.get('TRAVIS_BRANCH')
 
-print('branch: ')
-print(os.environ('TRAVIS_BRANCH'))
+GA_CODE = getEnvironmentCode('ga_prod.txt', 'ga_dev.txt', PRODUCTION_BRANCH, CURRENT_BRACNH)
+OM_CODE = getEnvironmentCode('om_prod.txt', 'om_dev.txt', PRODUCTION_BRANCH, CURRENT_BRACNH)
 
-currentBranch = 'master'
-        
-searchInfolder(publichPath)
+MAPPING = {
+    '<!-- {{ GA_CODE }} -->': GA_CODE,
+    '<!-- {{ OM_CODE }} -->': OM_CODE
+}
+
+searchFileByExtension(PUBLIC_PATH, '.html')
