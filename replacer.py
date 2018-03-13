@@ -1,14 +1,25 @@
 #
-# Vidizayn 
+# Vidizayn
+# <hasansemiherdogan@gmail.com>
 #
 
 import os
-import sys
 
-def getEnvironmentCode(prodFile, devFile, prodBranch, currentBranch):
-    global ANALYTICS_PATH
+def getEnvironmentCode(folder, prodFile, devFile, prodBranch, currentBranch):
+	"""Replaceses placeholders in files from MAPPING dictionary.
+
+    Args:
+        folder: root folder of given files
+		prodFile: file to use if current branch is prod
+		devFile: ile to use if current branch is dev
+		prodBranch: prod branch
+		currentBranch: current branch
+    Returns:
+        String
+    """
+	
     fileToRead = prodFile if prodBranch == currentBranch else devFile
-    fileToRead = ANALYTICS_PATH + '/' + fileToRead
+    fileToRead = folder + '/' + fileToRead
     if os.path.isfile(fileToRead):
         with open(fileToRead, 'r') as f :
             return f.read()
@@ -16,6 +27,14 @@ def getEnvironmentCode(prodFile, devFile, prodBranch, currentBranch):
         return ''
 
 def replaceWithMapping(filePath):
+	"""Replaceses files placeholders from MAPPING dictionary.
+
+    Args:
+        filePath: file to replace.
+    Returns:
+        void
+    """
+
     global MAPPING
 
     with open(filePath, 'r') as file :
@@ -37,6 +56,15 @@ def replaceWithMapping(filePath):
             f.write(fileContent)
 
 def searchFileByExtension(folderPath, ext):
+	"""Searches file by extension in given path recursively.
+
+    Args:
+        folderPath: root folder to search files.
+		ext: file extension
+    Returns:
+        void
+    """
+
     for f in os.listdir(folderPath):
         filePath = os.path.join(folderPath, f)
         if f.endswith(ext):
@@ -46,14 +74,13 @@ def searchFileByExtension(folderPath, ext):
 
 
 CURRENT_PATH        = os.getcwd();
-
 PUBLIC_PATH         = CURRENT_PATH + '/public'
 ANALYTICS_PATH      = CURRENT_PATH + '/analytics'
-PRODUCTION_BRANCH   = 'master'
+PRODUCTION_BRANCH   = 'live'
 CURRENT_BRACNH      = os.environ.get('TRAVIS_BRANCH')
 
-GA_CODE = getEnvironmentCode('ga_prod.txt', 'ga_dev.txt', PRODUCTION_BRANCH, CURRENT_BRACNH)
-OM_CODE = getEnvironmentCode('om_prod.txt', 'om_dev.txt', PRODUCTION_BRANCH, CURRENT_BRACNH)
+GA_CODE = getEnvironmentCode(ANALYTICS_PATH, 'ga_prod.txt', 'ga_dev.txt', PRODUCTION_BRANCH, CURRENT_BRACNH)
+OM_CODE = getEnvironmentCode(ANALYTICS_PATH, 'om_prod.txt', 'om_dev.txt', PRODUCTION_BRANCH, CURRENT_BRACNH)
 
 MAPPING = {
     '<!-- {{ GA_CODE }} -->': GA_CODE,
