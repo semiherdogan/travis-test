@@ -2,4 +2,6 @@ language: python
 python:
   - "3.5"
 script:
+  - cat ./public.html
   - python ./replacer.py
+  - cat ./public.html
