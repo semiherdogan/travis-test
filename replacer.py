@@ -23,15 +23,18 @@ def replaceWithMapping(filePath):
 
     print('File: ' + filePath)
 
+    willReplace = False
     for textToFind in MAPPING:
         if fileContent.find(textToFind) > -1:
-            with open(filePath, 'w') as f:
-                fileContent = fileContent.replace(textToFind, MAPPING[textToFind])
-                f.write(fileContent)
-
+            willReplace = True
+            fileContent = fileContent.replace(textToFind, MAPPING[textToFind])
             print('Replaced: ' + textToFind)
         else:
             print('Not found: ' + textToFind)
+    
+    if willReplace :
+        with open(filePath, 'w') as f:
+            f.write(fileContent)
 
 def searchFileByExtension(folderPath, ext):
     for f in os.listdir(folderPath):
@@ -42,9 +45,11 @@ def searchFileByExtension(folderPath, ext):
             searchFileByExtension(filePath, ext)
 
 
-PUBLIC_PATH         = './public'
-ANALYTICS_PATH      = './analytics'
-PRODUCTION_BRANCH   = 'live'
+CURRENT_PATH        = os.getcwd();
+
+PUBLIC_PATH         = CURRENT_PATH + '/public'
+ANALYTICS_PATH      = CURRENT_PATH + '/analytics'
+PRODUCTION_BRANCH   = 'master'
 CURRENT_BRACNH      = os.environ.get('TRAVIS_BRANCH')
 
 GA_CODE = getEnvironmentCode('ga_prod.txt', 'ga_dev.txt', PRODUCTION_BRANCH, CURRENT_BRACNH)
@@ -54,5 +59,7 @@ MAPPING = {
     '<!-- {{ GA_CODE }} -->': GA_CODE,
     '<!-- {{ OM_CODE }} -->': OM_CODE
 }
+
+print( CURRENT_BRACNH )
 
 searchFileByExtension(PUBLIC_PATH, '.html')
