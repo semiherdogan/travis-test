@@ -1,23 +1,23 @@
 #
 # Vidizayn
-# <hasansemiherdogan@gmail.com>
+# <semih.erdogan@vidizayn.com>
 #
 
 import os
 
 def getEnvironmentCode(folder, prodFile, devFile, prodBranch, currentBranch):
-	"""Replaceses placeholders in files from MAPPING dictionary.
+    """Replaceses placeholders in files from MAPPING dictionary.
 
     Args:
         folder: root folder of given files
-		prodFile: file to use if current branch is prod
-		devFile: ile to use if current branch is dev
-		prodBranch: prod branch
-		currentBranch: current branch
+        prodFile: file to use if current branch is prod
+        devFile: ile to use if current branch is dev
+        prodBranch: prod branch
+        currentBranch: current branch
     Returns:
         String
     """
-	
+    
     fileToRead = prodFile if prodBranch == currentBranch else devFile
     fileToRead = folder + '/' + fileToRead
     if os.path.isfile(fileToRead):
@@ -27,7 +27,7 @@ def getEnvironmentCode(folder, prodFile, devFile, prodBranch, currentBranch):
         return ''
 
 def replaceWithMapping(filePath):
-	"""Replaceses files placeholders from MAPPING dictionary.
+    """Replaceses files placeholders from MAPPING dictionary.
 
     Args:
         filePath: file to replace.
@@ -56,11 +56,11 @@ def replaceWithMapping(filePath):
             f.write(fileContent)
 
 def searchFileByExtension(folderPath, ext):
-	"""Searches file by extension in given path recursively.
+    """Searches file by extension in given path recursively.
 
     Args:
         folderPath: root folder to search files.
-		ext: file extension
+        ext: file extension
     Returns:
         void
     """
