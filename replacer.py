@@ -21,7 +21,7 @@ def getEnvironmentCode(folder, prodFile, devFile, prodBranch, currentBranch):
     fileToRead = prodFile if prodBranch == currentBranch else devFile
     fileToRead = folder + '/' + fileToRead
     if os.path.isfile(fileToRead):
-        with open(fileToRead, 'r') as f :
+        with open(fileToRead, 'r', encoding='utf8') as f :
             return f.read()
     else:
         return ''
@@ -37,7 +37,7 @@ def replaceWithMapping(filePath):
 
     global MAPPING
 
-    with open(filePath, 'r') as file :
+    with open(filePath, 'r', encoding='utf8') as file :
         fileContent = file.read()
 
     print('File: ' + filePath)
@@ -52,7 +52,7 @@ def replaceWithMapping(filePath):
             print('Not found: ' + textToFind)
     
     if willReplace :
-        with open(filePath, 'w') as f:
+        with open(filePath, 'w', encoding='utf8') as f:
             f.write(fileContent)
 
 def searchFileByExtension(folderPath, ext):
